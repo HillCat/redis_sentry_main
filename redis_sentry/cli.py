@@ -3,6 +3,7 @@ import whisper
 from whisper.tokenizer import LANGUAGES, TO_LANGUAGE_CODE
 import argparse
 import warnings
+import shutil
 from moviepy.editor import VideoFileClip
 import sys
 from .utils import slugify, str2bool, write_srt, write_vtt
@@ -70,14 +71,18 @@ def main():
 
 
 def get_audio(videoFile):
-    
-    temp_dir = tempfile.gettempdir()
-    AudioPath = os.path.join(temp_dir, os.path.basename(videoFile)+".mp3")
-    clip = VideoFileClip(videoFile)
-    clip.audio.write_audiofile(AudioPath)
-    
 
-    return AudioPath
+    if videoFile.endswith('.mp3'):
+        temp_dir = tempfile.gettempdir()
+        AudioPath = os.path.join(temp_dir, os.path.basename(videoFile) + ".mp3")
+        shutil.copyfile(videoFile, AudioPath)
+        return AudioPath
+    elif videoFile.endswith('.mp4'):
+       temp_dir = tempfile.gettempdir()
+       AudioPath = os.path.join(temp_dir, os.path.basename(videoFile)+".mp3")
+       clip = VideoFileClip(videoFile)
+       clip.audio.write_audiofile(AudioPath)
+       return AudioPath
 
 
 if __name__ == '__main__':
